@@ -1,6 +1,9 @@
 package com.mogobiz.utils
 
-import java.net.URLEncoder
+import java.io.File
+import java.net.{URLDecoder, URLEncoder}
+import java.util
+import java.util.jar.{JarEntry, JarFile}
 
 import scala.concurrent.{ExecutionContext, Future}
 import spray.http.HttpResponse
@@ -51,5 +54,4 @@ object GlobalUtil {
       tuples
     }
   }
-
 }
