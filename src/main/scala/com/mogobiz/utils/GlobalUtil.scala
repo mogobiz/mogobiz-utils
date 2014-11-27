@@ -57,15 +57,15 @@ object GlobalUtil {
     }
   }
 
-  def hideStringExceptLastN(s: String, n: Int) = {
-    if (n < 0) Failure(new Exception("n cannot be < 0."))
-    else Success(
-      if (s == "") {
-        ""
-      } else {
-        val nToHide = s.length - n
-        ("*" * nToHide) + s.substring(nToHide)
-      }
-    )
+  def hideStringExceptLastN(s: String, n: Int, replacement: String = "*") = {
+    require(n >= 0, "n cannot be < 0.")
+    require(n <= s.length, "n cannot be < 0.")
+    println("foo")
+    if (s == "") {
+      ""
+    } else {
+      val nToHide = s.length - n
+      (replacement * nToHide) + s.substring(nToHide)
+    }
   }
 }
