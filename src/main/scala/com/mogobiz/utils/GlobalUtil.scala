@@ -8,6 +8,8 @@ import java.util.jar.{JarEntry, JarFile}
 import scala.concurrent.{ExecutionContext, Future}
 import spray.http.HttpResponse
 
+import scala.util.{Success, Failure}
+
 object GlobalUtil {
   def now = new java.util.Date()
 
@@ -53,5 +55,17 @@ object GlobalUtil {
       }).toMap
       tuples
     }
+  }
+
+  def hideStringExceptLastN(s: String, n: Int) = {
+    if (n < 0) Failure(new Exception("n cannot be < 0."))
+    else Success(
+      if (s == "") {
+        ""
+      } else {
+        val nToHide = s.length - n
+        ("*" * nToHide) + s.substring(nToHide)
+      }
+    )
   }
 }
