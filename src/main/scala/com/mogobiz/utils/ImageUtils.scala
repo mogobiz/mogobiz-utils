@@ -1,45 +1,49 @@
 package com.mogobiz.utils
 
-import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import java.nio.file.Files._
+import java.nio.file.Paths.get
+
+import com.mogobiz.utils.MimeTypeTools._
+import com.mortennobel.imagescaling.{AdvancedResizeOp, ResampleOp}
 
 object ImageUtils {
 
-  def resizeImage(inputFile: File) {
-    val originalImage: BufferedImage = ImageIO.read(inputFile)
-    var height: Int = originalImage.getHeight
-    var width: Int = originalImage.getWidth
-    val _type: Int = originalImage.getType match {
-      case 0 => BufferedImage.TYPE_INT_ARGB
-      case _ => originalImage.getType
-    }
-    for (size <- imageSizes.values) {
-      val bufferedImage: BufferedImage = new BufferedImage(size.width, size.height, _type)
-      val g: Graphics2D = bufferedImage.createGraphics()
-      if (width > height) {
-        height = (height * size.height) / width
-        width = size.width
-      }
-      else {
-        width = (width * size.width) / height
-        height = size.height
-      }
-      g.drawImage(originalImage, 0, 0, width, height, null)
-      g.dispose()
-      val outputFile: File = getFile(inputFile, Some(size), create = false)
-      ImageIO.write(bufferedImage, "jpg", outputFile)
+  def resizeImage(file:File, width:Int, height:Int):Option[File] = {
+    toFormat(file) match {
+      case Some(format) =>
+        val out = new File(s"${file.getAbsolutePath}.${width}x$height.$format")
+        if(!out.exists()){
+          val src:BufferedImage = ImageIO.read(file)
+          val originalWidth = src.getWidth
+          val originalHeight = src.getHeight
+          if(width == originalWidth && height == originalHeight){
+            copy (get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
+          }
+          else{
+            val resampleOp: ResampleOp = new ResampleOp(width, height)
+            resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
+            ImageIO.write(resampleOp.filter(src, null), format, out)
+          }
+        }
+        Some(out)
+      case None => None
     }
   }
 
   def getFile(inputFile: File, size: Option[ImageSize], create: Boolean): File = {
     size match {
       case Some(s) =>
-        val file: File = new File(s"${inputFile.getAbsolutePath}.${s.width}x${s.height}.jpg")
+        val format = toFormat(detectMimeType(inputFile))
+        val file: File = new File(s"${inputFile.getAbsolutePath}.${s.width}x${s.height}.$format")
         if (!file.exists() && create) {
-          resizeImage(inputFile)
+          for (imageSize <- imageSizes.values){
+            resizeImage(file, imageSize.width, imageSize.height)
+          }
         }
         file
       case _ => inputFile
