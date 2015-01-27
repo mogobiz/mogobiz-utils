@@ -13,8 +13,10 @@ object ExecuteShellTools {
     val p:Process = Runtime.getRuntime.exec(command)
     p.waitFor()
     val reader:BufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream))
-    for (line <- reader.readLine()){
+    var line = reader.readLine()
+    while(line != null){
       output.append(line + "\n")
+      line = reader.readLine()
     }
     output.toString()
   }
