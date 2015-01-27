@@ -13,22 +13,25 @@ import com.mortennobel.imagescaling.{AdvancedResizeOp, ResampleOp}
 
 object ImageUtils {
 
-  def resizeImage(file:File, format:String, width:Int, height:Int):File = {
-    val out = new File(s"${file.getAbsolutePath}.${width}x$height.$format")
-    if(!out.exists()){
+  def resizeImage(file:File, format:String):Unit = {
       val src:BufferedImage = ImageIO.read(file)
       val originalWidth = src.getWidth
       val originalHeight = src.getHeight
-      if(width == originalWidth && height == originalHeight){
-        copy (get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
+      for (imageSize <- imageSizes.values) {
+        val width = imageSize.width
+        val height = imageSize.height
+        val out = new File(s"${file.getAbsolutePath}.${width}x$height.$format")
+        if (!out.exists()) {
+          if (width == originalWidth && height == originalHeight) {
+            copy(get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
+          }
+          else {
+            val resampleOp: ResampleOp = new ResampleOp(width, height)
+            resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
+            ImageIO.write(resampleOp.filter(src, null), format, out)
+          }
+        }
       }
-      else{
-        val resampleOp: ResampleOp = new ResampleOp(width, height)
-        resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
-        ImageIO.write(resampleOp.filter(src, null), format, out)
-      }
-    }
-    out
   }
 
   def getFile(inputFile: File, size: Option[ImageSize], create: Boolean): File = {
@@ -38,9 +41,7 @@ object ImageUtils {
         val path = s"${inputFile.getAbsolutePath}.${s.width}x${s.height}.$format"
         val file: File = new File(path)
         if (!file.exists() && create) {
-          for (imageSize <- imageSizes.values){
-            resizeImage(inputFile, format, imageSize.width, imageSize.height)
-          }
+          resizeImage(inputFile, format)
         }
         file
       case _ => inputFile
