@@ -13,8 +13,6 @@ import scala.util.{Failure, Success, Try}
  */
 object MimeTypeTools {
 
-  val MIME_TYPE = Pattern.compile("(.*:\\s)(.*)")
-
   val FORMAT = Pattern.compile("(.*)\\/(.*)")
 
   def detectMimeType(file:File):Option[String] = {
