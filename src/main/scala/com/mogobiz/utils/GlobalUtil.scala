@@ -1,14 +1,9 @@
 package com.mogobiz.utils
 
-import java.io.File
-import java.net.{URLDecoder, URLEncoder}
-import java.util
-import java.util.jar.{JarEntry, JarFile}
+import java.net.URLEncoder
 
 import scala.concurrent.{ExecutionContext, Future}
 import spray.http.HttpResponse
-
-import scala.util.{Success, Failure}
 
 object GlobalUtil {
   def now = new java.util.Date()
