@@ -52,7 +52,7 @@ object GlobalUtil {
     }
   }
 
-  def hideStringExceptLastN(s: String, n: Int, replacement: String = "*") = {
+  def hideStringExceptLastN(s: String, n: Int = 4, replacement: String = "*") = {
     require(n >= 0, "The number of characters to hide cannot be lesser than 0.")
     if (s.length < n) {
       replacement * s.length
