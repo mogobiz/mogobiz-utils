@@ -61,4 +61,13 @@ object GlobalUtil {
       (replacement * nToHide) + s.substring(nToHide)
     }
   }
+
+  def queryStringToMap(s: String, sep: String = "&", elementsSep: String = "="): Map[String, String] =
+    s.split(sep).toList match {
+      case head :: Nil => Map()
+      case split       => split.map { s =>
+        val split = s.split(elementsSep)
+        (split(0), split(1))
+      }.toMap
+    }
 }
