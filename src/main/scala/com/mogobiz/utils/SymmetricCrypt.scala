@@ -14,7 +14,7 @@ object SymmetricCrypt {
     stream.write(clearText.getBytes)
     var bytes: Array[Byte] = stream.toByteArray
     val cipher: Cipher = Cipher.getInstance(cryptoAlgorithm)
-    val cryptoKey: SecretKeySpec = new SecretKeySpec(cryptoSecret.getBytes, cryptoAlgorithm.split("/")(0))
+    val cryptoKey: SecretKeySpec = new SecretKeySpec(hexToBytes(cryptoSecret), cryptoAlgorithm.split("/")(0))
     cipher.init(Cipher.ENCRYPT_MODE, cryptoKey)
     bytes = cipher.doFinal(bytes)
     val useInitializationVector: Boolean = if (cryptoAlgorithm.indexOf('/') < 0) false else cryptoAlgorithm.split("/")(1).toUpperCase ne "ECB"
@@ -30,9 +30,28 @@ object SymmetricCrypt {
     return cryptedData
   }
 
+  def hexToBytes(str: String): Array[Byte] = {
+    if (str == null) {
+      null
+    }
+    else if (str.length < 2) {
+      null
+    }
+    else {
+      val len = str.length / 2
+      val buffer = new Array[Byte](len)
+      var i = 0
+      while (i < len) {
+        buffer(i) = Integer.parseInt(str.substring(i * 2, i * 2 + 2), 16).toByte
+        i = i + 1
+      }
+      buffer
+    }
+  }
+
   def decrypt(cryptedData: String, cryptoSecret: String, cryptoAlgorithm: String): String = {
     val cipher: Cipher = Cipher.getInstance(cryptoAlgorithm)
-    val cryptoKey: SecretKeySpec = new SecretKeySpec(cryptoSecret.getBytes, cryptoAlgorithm.split("/")(0))
+    val cryptoKey: SecretKeySpec = new SecretKeySpec(hexToBytes(cryptoSecret), cryptoAlgorithm.split("/")(0))
     val useInitializationVector: Boolean = if (cryptoAlgorithm.indexOf('/') < 0) false else cryptoAlgorithm.split("/")(1).toUpperCase ne "ECB"
     var cryptedBytes: Array[Byte] = Base64.decode(cryptedData, Base64.URL_SAFE)
     if (useInitializationVector) {
@@ -50,8 +69,8 @@ object SymmetricCrypt {
 
   def main(args: Array[String]) {
     val input: String = "{\"storeName\":\"eCommerce\",\"storeCode\":\"ecommerce\",\"owneremail\":\"root@mogobiz.com\",\"ownerfirstname\":\"root\",\"ownerlastname\":\"root\"}"
-    val data: String = encrypt(input, "1234567890123456", "AES")
-    val res: String = decrypt(data, "1234567890123456", "AES")
+    val data: String = encrypt(input, "d2e82b704daaf544efa9e3c2e7aa93e7", "AES")
+    val res: String = decrypt(data, "d2e82b704daaf544efa9e3c2e7aa93e7", "AES")
     System.out.println(res + "/" + data)
   }
 }
