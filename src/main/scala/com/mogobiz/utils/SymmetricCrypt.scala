@@ -9,12 +9,18 @@ import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
 object SymmetricCrypt {
-  def encrypt(clearText: String, cryptoSecret: String, cryptoAlgorithm: String): String = {
+
+  def cryptoSecretToBytes(cryptoSecret: String, hexSecret: Boolean) : Array[Byte] = {
+    if (hexSecret) hexToBytes(cryptoSecret)
+    else cryptoSecret.getBytes
+  }
+
+  def encrypt(clearText: String, cryptoSecret: String, cryptoAlgorithm: String, hexSecret: Boolean = false): String = {
     val stream: ByteArrayOutputStream = new ByteArrayOutputStream
     stream.write(clearText.getBytes)
     var bytes: Array[Byte] = stream.toByteArray
     val cipher: Cipher = Cipher.getInstance(cryptoAlgorithm)
-    val cryptoKey: SecretKeySpec = new SecretKeySpec(hexToBytes(cryptoSecret), cryptoAlgorithm.split("/")(0))
+    val cryptoKey: SecretKeySpec = new SecretKeySpec(cryptoSecretToBytes(cryptoSecret, hexSecret), cryptoAlgorithm.split("/")(0))
     cipher.init(Cipher.ENCRYPT_MODE, cryptoKey)
     bytes = cipher.doFinal(bytes)
     val useInitializationVector: Boolean = if (cryptoAlgorithm.indexOf('/') < 0) false else cryptoAlgorithm.split("/")(1).toUpperCase ne "ECB"
@@ -49,9 +55,9 @@ object SymmetricCrypt {
     }
   }
 
-  def decrypt(cryptedData: String, cryptoSecret: String, cryptoAlgorithm: String): String = {
+  def decrypt(cryptedData: String, cryptoSecret: String, cryptoAlgorithm: String, hexSecret: Boolean = false): String = {
     val cipher: Cipher = Cipher.getInstance(cryptoAlgorithm)
-    val cryptoKey: SecretKeySpec = new SecretKeySpec(hexToBytes(cryptoSecret), cryptoAlgorithm.split("/")(0))
+    val cryptoKey: SecretKeySpec = new SecretKeySpec(cryptoSecretToBytes(cryptoSecret, hexSecret), cryptoAlgorithm.split("/")(0))
     val useInitializationVector: Boolean = if (cryptoAlgorithm.indexOf('/') < 0) false else cryptoAlgorithm.split("/")(1).toUpperCase ne "ECB"
     var cryptedBytes: Array[Byte] = Base64.decode(cryptedData, Base64.URL_SAFE)
     if (useInitializationVector) {
