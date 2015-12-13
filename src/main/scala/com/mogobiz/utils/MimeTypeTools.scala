@@ -13,7 +13,6 @@ import scala.util.{Failure, Success, Try}
 
 /**
  *
- * Created by smanciot on 26/01/15.
  */
 object MimeTypeTools {
 

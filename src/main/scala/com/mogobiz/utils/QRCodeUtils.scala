@@ -15,7 +15,6 @@ import com.google.zxing.{BarcodeFormat, EncodeHintType}
 
 /**
  *
- * Created by Christophe on 09/07/2014.
  */
 object QRCodeUtils {
 

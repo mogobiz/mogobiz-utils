@@ -10,7 +10,6 @@ import org.specs2.mutable.Specification
 
 /**
  *
- * Created by smanciot on 16/04/15.
  */
 class MimeTypeToolsSpec extends Specification{
 

@@ -5,7 +5,6 @@
 package com.mogobiz.utils
 
 /**
- * Created by hayssams on 08/09/14.
  */
 class TrustedSSLFactory {
 

@@ -6,7 +6,6 @@ package com.mogobiz
 
 /**
  *
- * Created by smanciot on 26/01/15.
  */
 package object utils {
 
