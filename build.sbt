@@ -1,2 +1,4 @@
 name := "mogobiz-utils"
 
+
+scalariformSettings

@@ -6,7 +6,7 @@ package com.mogobiz.utils
 
 import java.net.URLEncoder
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import spray.http.HttpResponse
 
 object GlobalUtil {
@@ -30,16 +30,18 @@ object GlobalUtil {
   }
 
   def mapToQueryString(m: List[(String, Any)]): String = {
-    m.map { case (k, v) =>
-      println(s"$k=$v")
-      s"$k=" + URLEncoder.encode(if (v == null) "" else v.toString, "UTF-8")
+    m.map {
+      case (k, v) =>
+        println(s"$k=$v")
+        s"$k=" + URLEncoder.encode(if (v == null) "" else v.toString, "UTF-8")
     }.mkString("&")
   }
 
   def mapToQueryStringNoEncode(m: List[(String, Any)]): String = {
-    m.map { case (k, v) =>
-      println(s"$k=$v")
-      s"$k=$v"
+    m.map {
+      case (k, v) =>
+        println(s"$k=$v")
+        s"$k=$v"
     }.mkString("&")
   }
 
@@ -69,7 +71,7 @@ object GlobalUtil {
   def queryStringToMap(s: String, sep: String = "&", elementsSep: String = "="): Map[String, String] =
     s.split(sep).toList match {
       case head :: Nil => Map()
-      case split       => split.map { s =>
+      case split => split.map { s =>
         val split = s.split(elementsSep)
         (split(0), split(1))
       }.toMap

@@ -13,29 +13,28 @@ import java.nio.file.Files._
 import java.nio.file.Paths.get
 
 import com.mogobiz.utils.MimeTypeTools._
-import com.mortennobel.imagescaling.{AdvancedResizeOp, ResampleOp}
+import com.mortennobel.imagescaling.{ AdvancedResizeOp, ResampleOp }
 
 object ImageUtils {
 
-  def resizeImage(file:File, format:String):Unit = {
-      val src:BufferedImage = ImageIO.read(file)
-      val originalWidth = src.getWidth
-      val originalHeight = src.getHeight
-      for (imageSize <- imageSizes.values) {
-        val width = imageSize.width
-        val height = imageSize.height
-        val out = new File(s"${file.getAbsolutePath}.${width}x$height.$format")
-        if (!out.exists()) {
-          if (width == originalWidth && height == originalHeight) {
-            copy(get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
-          }
-          else {
-            val resampleOp: ResampleOp = new ResampleOp(width, height)
-            resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
-            ImageIO.write(resampleOp.filter(src, null), format, out)
-          }
+  def resizeImage(file: File, format: String): Unit = {
+    val src: BufferedImage = ImageIO.read(file)
+    val originalWidth = src.getWidth
+    val originalHeight = src.getHeight
+    for (imageSize <- imageSizes.values) {
+      val width = imageSize.width
+      val height = imageSize.height
+      val out = new File(s"${file.getAbsolutePath}.${width}x$height.$format")
+      if (!out.exists()) {
+        if (width == originalWidth && height == originalHeight) {
+          copy(get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
+        } else {
+          val resampleOp: ResampleOp = new ResampleOp(width, height)
+          resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
+          ImageIO.write(resampleOp.filter(src, null), format, out)
         }
       }
+    }
   }
 
   def getFile(inputFile: File, size: Option[ImageSize], create: Boolean): File = {

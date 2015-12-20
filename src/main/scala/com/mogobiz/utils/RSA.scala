@@ -4,12 +4,11 @@
 
 package com.mogobiz.utils
 
-import java.io.{BufferedInputStream, BufferedOutputStream, File, FileInputStream, FileOutputStream, IOException, InputStream, ObjectInputStream, ObjectOutputStream}
+import java.io.{ BufferedInputStream, BufferedOutputStream, File, FileInputStream, FileOutputStream, IOException, InputStream, ObjectInputStream, ObjectOutputStream }
 import java.math.BigInteger
-import java.security.{Key, KeyFactory, KeyPair, KeyPairGenerator}
-import java.security.spec.{RSAPrivateKeySpec, RSAPublicKeySpec}
+import java.security.{ Key, KeyFactory, KeyPair, KeyPairGenerator }
+import java.security.spec.{ RSAPrivateKeySpec, RSAPublicKeySpec }
 import javax.crypto.Cipher
-
 
 object RSA {
   def genKeyPair(folder: File) {
@@ -28,13 +27,11 @@ object RSA {
     try {
       oout.writeObject(mod)
       oout.writeObject(exp)
-    }
-    catch {
+    } catch {
       case e: Exception => {
         throw new IOException("Unexpected error", e)
       }
-    }
-    finally {
+    } finally {
       oout.close
     }
   }
@@ -48,19 +45,16 @@ object RSA {
       if (pub) {
         val keySpec: RSAPublicKeySpec = new RSAPublicKeySpec(m, e)
         return fact.generatePublic(keySpec)
-      }
-      else {
+      } else {
         val keySpec: RSAPrivateKeySpec = new RSAPrivateKeySpec(m, e)
         return fact.generatePrivate(keySpec)
       }
-    }
-    catch {
+    } catch {
       case e: Exception => {
         e.printStackTrace
         throw new RuntimeException("Spurious serialisation error", e)
       }
-    }
-    finally {
+    } finally {
       oin.close
     }
   }

@@ -5,7 +5,7 @@
 package com.mogobiz.utils
 
 import java.security.cert.X509Certificate
-import javax.net.ssl.{KeyManager, SSLContext, X509TrustManager}
+import javax.net.ssl.{ KeyManager, SSLContext, X509TrustManager }
 
 import spray.io.ClientSSLEngineProvider
 

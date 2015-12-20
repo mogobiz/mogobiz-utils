@@ -4,11 +4,10 @@
 
 package com.mogobiz.utils
 
-import java.util.{Locale, ResourceBundle => JResourceBundle}
+import java.util.{ Locale, ResourceBundle => JResourceBundle }
 
 import scala.collection.JavaConverters._
 import scala.util.Try
-
 
 class ResourceBundle(baseName: String) {
 
@@ -23,7 +22,7 @@ class ResourceBundle(baseName: String) {
   def find(key: String, locale: Locale): Option[String] =
     Try(get(key, locale)).toOption
 
-  def getOrElse(key: String, locale: Locale, default: =>String) =
+  def getOrElse(key: String, locale: Locale, default: => String) =
     find(key, locale).getOrElse(default)
 
   def getWithParams(key: String, locale: Locale, params: Seq[Any]) = {

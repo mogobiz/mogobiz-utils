@@ -6,11 +6,11 @@ package com.mogobiz.utils
 
 import java.io.ByteArrayOutputStream
 import javax.crypto.Cipher
-import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
+import javax.crypto.spec.{ IvParameterSpec, SecretKeySpec }
 
 object SymmetricCrypt {
 
-  def cryptoSecretToBytes(cryptoSecret: String, hexSecret: Boolean) : Array[Byte] = {
+  def cryptoSecretToBytes(cryptoSecret: String, hexSecret: Boolean): Array[Byte] = {
     if (hexSecret) hexToBytes(cryptoSecret)
     else cryptoSecret.getBytes
   }
@@ -39,11 +39,9 @@ object SymmetricCrypt {
   def hexToBytes(str: String): Array[Byte] = {
     if (str == null) {
       null
-    }
-    else if (str.length < 2) {
+    } else if (str.length < 2) {
       null
-    }
-    else {
+    } else {
       val len = str.length / 2
       val buffer = new Array[Byte](len)
       var i = 0
@@ -65,8 +63,7 @@ object SymmetricCrypt {
       val ivSpec: IvParameterSpec = new IvParameterSpec(cryptedBytes, 1, ivLen)
       cipher.init(Cipher.DECRYPT_MODE, cryptoKey, ivSpec)
       cryptedBytes = cipher.doFinal(cryptedBytes, 1 + ivLen, cryptedBytes.length - 1 - ivLen)
-    }
-    else {
+    } else {
       cipher.init(Cipher.DECRYPT_MODE, cryptoKey)
       cryptedBytes = cipher.doFinal(cryptedBytes)
     }
