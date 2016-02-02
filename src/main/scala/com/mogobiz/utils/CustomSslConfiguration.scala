@@ -35,8 +35,9 @@ trait CustomSslConfiguration {
   }
 
   implicit val sslEngineProvider: ClientSSLEngineProvider = {
+    // To enable TLS 1.2 you can use the following setting of the VM: -Dhttps.protocols=TLSv1.1,TLSv1.2
     ClientSSLEngineProvider { engine =>
-      engine.setEnabledProtocols(Array("SSLv3", "TLSv1"))
+      engine.setEnabledProtocols(Array("TLSv1.2", "TLSv1.1", "SSLv3"))
       engine
     }
   }
