@@ -4,7 +4,9 @@
 
 package com.mogobiz.utils
 
-import java.io.{ BufferedInputStream, FileInputStream, File }
+import java.io._
+
+import org.apache.commons.io.input.ReaderInputStream
 
 /**
  *
@@ -28,20 +30,28 @@ object HashTools {
   def hashFile(file: File, algorithm: String = "MD5"): Option[String] = {
     if (file.exists()) {
       val stream = new BufferedInputStream(new FileInputStream(file))
-      import java.security.{ MessageDigest, DigestInputStream }
-      val digest = MessageDigest.getInstance(algorithm)
-      try {
-        val dis = new DigestInputStream(stream, digest)
-        val buffer = new Array[Byte](BufferSize)
-        while (dis.read(buffer) >= 0) {}
-        dis.close()
-        Some(Base64.encodeBytes(digest.digest()))
-      } finally {
-        stream.close()
-      }
+      hashStream(stream, algorithm)
     } else {
       None
     }
   }
 
+  def hashString(data: String, algorithm: String = "MD5"): Option[String] = {
+    val stream = new ByteArrayInputStream(data.getBytes("UTF-8"))
+    hashStream(stream, algorithm)
+  }
+
+  def hashStream(stream: InputStream, algorithm: String = "MD5"): Option[String] = {
+    import java.security.{ MessageDigest, DigestInputStream }
+    val digest = MessageDigest.getInstance(algorithm)
+    try {
+      val dis = new DigestInputStream(stream, digest)
+      val buffer = new Array[Byte](BufferSize)
+      while (dis.read(buffer) >= 0) {}
+      dis.close()
+      Some(Base64.encodeBytes(digest.digest()))
+    } finally {
+      stream.close()
+    }
+  }
 }
