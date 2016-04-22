@@ -4,10 +4,10 @@
 
 package com.mogobiz.utils
 
+import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 import java.nio.file.Files._
 import java.nio.file.Paths.get
@@ -29,9 +29,21 @@ object ImageUtils {
         if (width == originalWidth && height == originalHeight) {
           copy(get(file.getAbsolutePath), get(out.getAbsolutePath), REPLACE_EXISTING)
         } else {
-          val resampleOp: ResampleOp = new ResampleOp(width, height)
-          resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.VerySharp)
-          ImageIO.write(resampleOp.filter(src, null), format, out)
+          var imgWidth = width
+          var imgHeight = height
+          var topMargin = 0
+          var leftMargin = 0
+          if (originalWidth > originalHeight) {
+            imgHeight = originalHeight * width / originalWidth
+            topMargin = (imgWidth - imgHeight) / 2
+          } else {
+            imgWidth = originalWidth * height / originalHeight
+            leftMargin = (imgHeight - imgWidth) / 2
+          }
+
+          val dest = Scalr.resize(src, Scalr.Method.ULTRA_QUALITY, imgWidth, imgHeight)
+          val dest2 = Scalr.move(dest, leftMargin, topMargin, width, height, Color.WHITE)
+          ImageIO.write(dest2, format, out)
         }
       }
     }
