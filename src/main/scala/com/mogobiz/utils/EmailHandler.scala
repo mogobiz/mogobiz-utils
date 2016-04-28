@@ -4,11 +4,11 @@
 
 package com.mogobiz.utils
 
-import java.io.ByteArrayOutputStream
+import java.io.{ File, ByteArrayOutputStream }
 import javax.activation.DataSource
 import javax.mail.util.ByteArrayDataSource
 
-import org.apache.commons.mail.DataSourceResolver
+import org.apache.commons.mail.{ EmailAttachment, DataSourceResolver }
 
 /**
  * From https://gist.github.com/mariussoutier/3436111
@@ -33,7 +33,9 @@ object EmailHandler {
     subject: String,
     message: String,
     richMessage: Option[String] = None,
-    attachment: Option[(java.io.File)] = None)
+    attachment: Option[Attachment] = None)
+
+  case class Attachment(file: (java.io.File), name: String)
 
   object Send {
     def apply(mail: Mail)(implicit mailConfig: MailConfig): Unit = {
@@ -46,22 +48,21 @@ object EmailHandler {
 
       val commonsMail: Email = format match {
         case Plain => new SimpleEmail().setMsg(mail.message)
-        case Rich => {
+        case _ => {
           val dataSourceUrlResolver = new Base64ImageDataSource()
           val email = new ImageHtmlEmail()
           email.setDataSourceResolver(dataSourceUrlResolver)
           email.setHtmlMsg(mail.richMessage.get)
-        }
-        //        case Rich => new HtmlEmail().setHtmlMsg(mail.richMessage.get).setTextMsg(mail.message)
-        case MultiPart => {
-          val attachment = new EmailAttachment()
-          attachment.setPath(mail.attachment.get.getAbsolutePath)
-          attachment.setDisposition(EmailAttachment.ATTACHMENT)
-          attachment.setName(mail.attachment.get.getName)
-          new MultiPartEmail().attach(attachment).setMsg(mail.message)
+          mail.attachment.map { attachment: Attachment =>
+            val emailAttachment = new EmailAttachment()
+            emailAttachment.setPath(attachment.file.getAbsolutePath)
+            emailAttachment.setDisposition(EmailAttachment.ATTACHMENT)
+            emailAttachment.setName(attachment.name)
+            email.attach(emailAttachment)
+
+          }.getOrElse(email)
         }
       }
-
       commonsMail.setHostName(mailConfig.host)
       commonsMail.setSmtpPort(mailConfig.port)
       commonsMail.setSslSmtpPort(mailConfig.sslPort.toString)
