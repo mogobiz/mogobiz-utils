@@ -6,10 +6,12 @@ package com.mogobiz.utils
 
 import java.net.URLEncoder
 
-import scala.concurrent.{ ExecutionContext, Future }
+import com.typesafe.scalalogging.LazyLogging
 import spray.http.HttpResponse
 
-object GlobalUtil {
+import scala.concurrent.{ ExecutionContext, Future }
+
+object GlobalUtil extends LazyLogging {
   def now = new java.util.Date()
 
   def newUUID = java.util.UUID.randomUUID().toString
@@ -32,7 +34,7 @@ object GlobalUtil {
   def mapToQueryString(m: List[(String, Any)]): String = {
     m.map {
       case (k, v) =>
-        println(s"$k=$v")
+        logger.debug(s"$k=$v")
         s"$k=" + URLEncoder.encode(if (v == null) "" else v.toString, "UTF-8")
     }.mkString("&")
   }
@@ -40,7 +42,7 @@ object GlobalUtil {
   def mapToQueryStringNoEncode(m: List[(String, Any)]): String = {
     m.map {
       case (k, v) =>
-        println(s"$k=$v")
+        logger.debug(s"$k=$v")
         s"$k=$v"
     }.mkString("&")
   }
@@ -48,7 +50,7 @@ object GlobalUtil {
   def fromHttResponse(response: Future[HttpResponse])(implicit ev: ExecutionContext): Future[Map[String, String]] = {
     response map { response =>
       val data = response.entity.asString.trim
-      println(s"data $data")
+      logger.debug(s"data $data")
       val pairs = data.split('&')
       val tuples = (pairs map { pair =>
         val tab = pair.split('=')
