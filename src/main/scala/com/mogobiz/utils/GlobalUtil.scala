@@ -7,11 +7,14 @@ package com.mogobiz.utils
 import java.net.URLEncoder
 
 import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spray.http.HttpResponse
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object GlobalUtil extends LazyLogging {
+object GlobalUtil {
+  val logger = Logger(LoggerFactory.getLogger("com.mogobiz.utils.GlobalUtil"))
   def now = new java.util.Date()
 
   def newUUID = java.util.UUID.randomUUID().toString
