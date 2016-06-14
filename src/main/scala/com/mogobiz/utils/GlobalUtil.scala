@@ -6,13 +6,18 @@ package com.mogobiz.utils
 
 import java.net.URLEncoder
 
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import com.mogobiz.system.{ ActorSystemLocator, MaterializerLocator }
 import com.typesafe.scalalogging.Logger
-import spray.http.HttpResponse
 
 import scala.concurrent.{ ExecutionContext, Future }
 
 object GlobalUtil {
   val logger = Logger(org.slf4j.LoggerFactory.getLogger("com.mogobiz.utils.GlobalUtil"))
+  implicit val system = ActorSystemLocator()
+  implicit val materializer = MaterializerLocator()
+
   def now = new java.util.Date()
 
   def newUUID = java.util.UUID.randomUUID().toString
@@ -49,15 +54,17 @@ object GlobalUtil {
   }
 
   def fromHttResponse(response: Future[HttpResponse])(implicit ev: ExecutionContext): Future[Map[String, String]] = {
-    response map { response =>
-      val data = response.entity.asString.trim
-      logger.debug(s"data $data")
-      val pairs = data.split('&')
-      val tuples = (pairs map { pair =>
-        val tab = pair.split('=')
-        tab(0) -> (if (tab.length == 1) "" else tab(1))
-      }).toMap
-      tuples
+    response flatMap { response =>
+      Unmarshal(response.entity).to[String].map {
+        data =>
+          logger.debug(s"data $data")
+          val pairs = data.trim.split('&')
+          val tuples = (pairs map { pair =>
+            val tab = pair.split('=')
+            tab(0) -> (if (tab.length == 1) "" else tab(1))
+          }).toMap
+          tuples
+      }
     }
   }
 
