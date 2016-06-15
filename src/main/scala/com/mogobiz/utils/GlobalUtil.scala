@@ -7,9 +7,12 @@ package com.mogobiz.utils
 import java.net.URLEncoder
 
 import com.typesafe.scalalogging.Logger
+import scalikejdbc.{ DBSession, DB }
 import spray.http.HttpResponse
 
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
+import scalikejdbc.TxBoundary.Try._
 
 object GlobalUtil {
   val logger = Logger(org.slf4j.LoggerFactory.getLogger("com.mogobiz.utils.GlobalUtil"))
@@ -81,4 +84,13 @@ object GlobalUtil {
       }.toMap
     }
   }
+
+  def runInTransaction[T, U](call: DBSession => T, success: T => U): U = {
+    val r = DB localTx { implicit session => Try { call(session) } }
+    r match {
+      case Success(o) => success(o)
+      case Failure(e) => throw e
+    }
+  }
+
 }
