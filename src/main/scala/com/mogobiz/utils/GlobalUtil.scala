@@ -85,11 +85,14 @@ object GlobalUtil {
     }
   }
 
-  def runInTransaction[T, U](call: DBSession => T, success: T => U): U = {
+  def runInTransaction[T, U](call: DBSession => T, success: T => U, failure: Throwable => Unit = { e: Throwable => }): U = {
     val r = DB localTx { implicit session => Try { call(session) } }
     r match {
       case Success(o) => success(o)
-      case Failure(e) => throw e
+      case Failure(e) => {
+        failure(e)
+        throw e
+      }
     }
   }
 
