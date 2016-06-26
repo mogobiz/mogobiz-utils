@@ -5,8 +5,8 @@
 package com.mogobiz
 
 /**
- *
- */
+  *
+  */
 package object utils {
 
   implicit class Regex(sc: StringContext) {

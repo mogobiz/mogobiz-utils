@@ -9,8 +9,8 @@ import java.io._
 import org.apache.commons.io.input.ReaderInputStream
 
 /**
- *
- */
+  *
+  */
 object HashTools {
 
   private val BufferSize = 8192
@@ -42,10 +42,10 @@ object HashTools {
   }
 
   def hashStream(stream: InputStream, algorithm: String = "MD5"): Option[String] = {
-    import java.security.{ MessageDigest, DigestInputStream }
+    import java.security.{MessageDigest, DigestInputStream}
     val digest = MessageDigest.getInstance(algorithm)
     try {
-      val dis = new DigestInputStream(stream, digest)
+      val dis    = new DigestInputStream(stream, digest)
       val buffer = new Array[Byte](BufferSize)
       while (dis.read(buffer) >= 0) {}
       dis.close()

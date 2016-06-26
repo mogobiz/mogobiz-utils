@@ -7,11 +7,11 @@ package com.mogobiz.utils
 import java.net.URLEncoder
 
 import com.typesafe.scalalogging.Logger
-import scalikejdbc.{ DBSession, DB }
+import scalikejdbc.{DBSession, DB}
 import spray.http.HttpResponse
 
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success, Try }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 import scalikejdbc.TxBoundary.Try._
 
 object GlobalUtil {
@@ -57,9 +57,9 @@ object GlobalUtil {
       logger.debug(s"data $data")
       val pairs = data.split('&')
       val tuples = (pairs map { pair =>
-        val tab = pair.split('=')
-        tab(0) -> (if (tab.length == 1) "" else tab(1))
-      }).toMap
+            val tab = pair.split('=')
+            tab(0) -> (if (tab.length == 1) "" else tab(1))
+          }).toMap
       tuples
     }
   }
@@ -78,15 +78,19 @@ object GlobalUtil {
     val splitted = s.split(sep)
     splitted.toList match {
       case head :: Nil => Map()
-      case split => split.map { s =>
-        val split = s.indexOf(elementsSep)
-        (s.substring(0, split), s.substring(split + 1))
-      }.toMap
+      case split =>
+        split.map { s =>
+          val split = s.indexOf(elementsSep)
+          (s.substring(0, split), s.substring(split + 1))
+        }.toMap
     }
   }
 
-  def runInTransaction[T, U](call: DBSession => T, success: T => U, failure: Throwable => Unit = { e: Throwable => }): U = {
-    val r = DB localTx { implicit session => Try { call(session) } }
+  def runInTransaction[T, U](call: DBSession => T, success: T => U, failure: Throwable => Unit = { e: Throwable =>
+    }): U = {
+    val r = DB localTx { implicit session =>
+      Try { call(session) }
+    }
     r match {
       case Success(o) => success(o)
       case Failure(e) => {

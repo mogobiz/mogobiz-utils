@@ -11,11 +11,11 @@ import javax.imageio.ImageIO
 
 import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import com.google.zxing.{ BarcodeFormat, EncodeHintType }
+import com.google.zxing.{BarcodeFormat, EncodeHintType}
 
 /**
- *
- */
+  *
+  */
 object QRCodeUtils {
 
   def createQrCode(outputStream: OutputStream, content: String, qrCodeSize: Int, imageFormat: String) {
@@ -26,7 +26,7 @@ object QRCodeUtils {
       hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L)
 
       val qrCodeWriter = new QRCodeWriter()
-      val byteMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, qrCodeSize, qrCodeSize, hintMap)
+      val byteMatrix   = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, qrCodeSize, qrCodeSize, hintMap)
       // Make the BufferedImage that are to hold the QRCode
       val matrixWidth = byteMatrix.getWidth
 
@@ -39,7 +39,7 @@ object QRCodeUtils {
       // Paint and save the image using the ByteMatrix
       graphics.setColor(Color.BLACK)
 
-      for (i <- 0 until matrixWidth) {
+      for (i   <- 0 until matrixWidth) {
         for (j <- 0 until matrixWidth) {
           //if (byteMatrix.get(i, j) == 0)
           if (!byteMatrix.get(i, j)) {

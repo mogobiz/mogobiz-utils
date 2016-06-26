@@ -5,7 +5,7 @@
 package com.mogobiz.utils
 
 import java.security.cert.X509Certificate
-import javax.net.ssl.{ KeyManager, SSLContext, X509TrustManager }
+import javax.net.ssl.{KeyManager, SSLContext, X509TrustManager}
 
 import akka.io.IO
 import akka.pattern.ask
@@ -14,7 +14,7 @@ import com.mogobiz.system.ActorSystemLocator
 import spray.can.Http
 import spray.client.pipelining._
 import spray.http.Uri.Host
-import spray.http.{ HttpRequest, HttpResponse }
+import spray.http.{HttpRequest, HttpResponse}
 import spray.io.ClientSSLEngineProvider
 
 import scala.concurrent.Future
@@ -45,12 +45,18 @@ trait CustomSslConfiguration {
 
   def sslPipeline(host: Host): Future[SendReceive] = {
     implicit val system = ActorSystemLocator()
-    implicit val _ = system.dispatcher
-    val logRequest: HttpRequest => HttpRequest = { r => println(r); r }
-    val logResponse: HttpResponse => HttpResponse = { r => println(r); r }
-    for (
-      Http.HostConnectorInfo(connector, _) <- IO(Http) ? Http.HostConnectorSetup(host.toString, 443, sslEncryption = true)(system, sslEngineProvider)
-    ) yield logRequest ~> sendReceive(connector) ~> logResponse
+    implicit val _      = system.dispatcher
+    val logRequest: HttpRequest => HttpRequest = { r =>
+      println(r); r
+    }
+    val logResponse: HttpResponse => HttpResponse = { r =>
+      println(r); r
+    }
+    for (Http.HostConnectorInfo(connector, _) <- IO(Http) ? Http.HostConnectorSetup(
+                                                    host.toString,
+                                                    443,
+                                                    sslEncryption = true)(system, sslEngineProvider))
+      yield logRequest ~> sendReceive(connector) ~> logResponse
 
   }
 }

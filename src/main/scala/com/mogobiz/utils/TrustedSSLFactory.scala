@@ -5,12 +5,10 @@
 package com.mogobiz.utils
 
 /**
- */
-class TrustedSSLFactory {
+  */
+class TrustedSSLFactory {}
 
-}
-
-import java.security.{ GeneralSecurityException, SecureRandom }
+import java.security.{GeneralSecurityException, SecureRandom}
 import java.security.cert.X509Certificate
 import javax.net.ssl._
 
@@ -36,11 +34,9 @@ object TrustedSSLFactory {
   val JaxwsSslSockeetFactory: String = "com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory"
 
   private class NaiveTrustManager extends X509TrustManager {
-    def checkClientTrusted(certs: Array[X509Certificate], authType: String) {
-    }
+    def checkClientTrusted(certs: Array[X509Certificate], authType: String) {}
 
-    def checkServerTrusted(certs: Array[X509Certificate], authType: String) {
-    }
+    def checkServerTrusted(certs: Array[X509Certificate], authType: String) {}
 
     def getAcceptedIssuers: Array[X509Certificate] = {
       new Array[X509Certificate](0)
@@ -48,4 +44,3 @@ object TrustedSSLFactory {
   }
 
 }
-
