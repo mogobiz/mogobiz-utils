@@ -9,11 +9,11 @@ import java.util.regex.Pattern
 
 import org.apache.tika.Tika
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 /**
- *
- */
+  *
+  */
 object MimeTypeTools {
 
   val FORMAT = Pattern.compile("(.*)\\/(.*)")
