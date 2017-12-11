@@ -8,8 +8,8 @@ package com.mogobiz.utils
   */
 class TrustedSSLFactory {}
 
-import java.security.{GeneralSecurityException, SecureRandom}
 import java.security.cert.X509Certificate
+import java.security.{GeneralSecurityException, SecureRandom}
 import javax.net.ssl._
 
 object TrustedSSLFactory {

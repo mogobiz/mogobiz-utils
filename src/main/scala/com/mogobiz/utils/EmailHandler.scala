@@ -4,11 +4,11 @@
 
 package com.mogobiz.utils
 
-import java.io.{File, ByteArrayOutputStream}
+import java.io.ByteArrayOutputStream
 import javax.activation.DataSource
 import javax.mail.util.ByteArrayDataSource
 
-import org.apache.commons.mail.{EmailAttachment, DataSourceResolver}
+import org.apache.commons.mail.DataSourceResolver
 
 /**
   * From https://gist.github.com/mariussoutier/3436111

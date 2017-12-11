@@ -6,8 +6,6 @@ package com.mogobiz.utils
 
 import java.io._
 
-import org.apache.commons.io.input.ReaderInputStream
-
 /**
   *
   */
@@ -42,7 +40,7 @@ object HashTools {
   }
 
   def hashStream(stream: InputStream, algorithm: String = "MD5"): Option[String] = {
-    import java.security.{MessageDigest, DigestInputStream}
+    import java.security.{DigestInputStream, MessageDigest}
     val digest = MessageDigest.getInstance(algorithm)
     try {
       val dis    = new DigestInputStream(stream, digest)

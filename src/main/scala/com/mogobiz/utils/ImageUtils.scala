@@ -7,13 +7,12 @@ package com.mogobiz.utils
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 import java.nio.file.Files._
 import java.nio.file.Paths.get
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import javax.imageio.ImageIO
 
 import com.mogobiz.utils.MimeTypeTools._
-import com.mortennobel.imagescaling.{AdvancedResizeOp, ResampleOp}
 
 object ImageUtils {
 

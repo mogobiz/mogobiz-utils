@@ -4,10 +4,10 @@
 
 package com.mogobiz.utils
 
-import java.io.{BufferedInputStream, BufferedOutputStream, File, FileInputStream, FileOutputStream, IOException, InputStream, ObjectInputStream, ObjectOutputStream}
+import java.io._
 import java.math.BigInteger
-import java.security.{Key, KeyFactory, KeyPair, KeyPairGenerator}
 import java.security.spec.{RSAPrivateKeySpec, RSAPublicKeySpec}
+import java.security.{Key, KeyFactory, KeyPair, KeyPairGenerator}
 import javax.crypto.Cipher
 
 object RSA {

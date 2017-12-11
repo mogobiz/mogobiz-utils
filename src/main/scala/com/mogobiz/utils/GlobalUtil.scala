@@ -7,12 +7,12 @@ package com.mogobiz.utils
 import java.net.URLEncoder
 
 import com.typesafe.scalalogging.Logger
-import scalikejdbc.{DBSession, DB}
+import scalikejdbc.TxBoundary.Try._
+import scalikejdbc.{DB, DBSession}
 import spray.http.HttpResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
-import scalikejdbc.TxBoundary.Try._
 
 object GlobalUtil {
   val logger = Logger(org.slf4j.LoggerFactory.getLogger("com.mogobiz.utils.GlobalUtil"))
@@ -21,7 +21,7 @@ object GlobalUtil {
   def newUUID = java.util.UUID.randomUUID().toString
 
   // From: http://stackoverflow.com/a/1227643/604041
-  def caseClassToMap(cc: AnyRef) =
+  def caseClassToMap(cc: AnyRef): Map[String, Any] =
     (Map[String, Any]() /: cc.getClass.getDeclaredFields) { (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(cc))
