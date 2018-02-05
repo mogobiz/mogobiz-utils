@@ -6,16 +6,21 @@ package com.mogobiz.utils
 
 import java.net.URLEncoder
 
-import com.typesafe.scalalogging.Logger
+import akka.actor.ActorSystem
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.ActorMaterializer
+import com.typesafe.scalalogging.{LazyLogging, Logger}
 import scalikejdbc.TxBoundary.Try._
 import scalikejdbc.{DB, DBSession}
-import spray.http.HttpResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-object GlobalUtil {
-  val logger = Logger(org.slf4j.LoggerFactory.getLogger("com.mogobiz.utils.GlobalUtil"))
+object GlobalUtil extends LazyLogging {
+  implicit val system: ActorSystem = akka.actor.ActorSystem("mogopay-boot")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+
   def now = new java.util.Date()
 
   def newUUID = java.util.UUID.randomUUID().toString
@@ -37,34 +42,40 @@ object GlobalUtil {
 
   def mapToQueryString(m: List[(String, Any)]): String = {
     m.map {
-      case (k, v) =>
-        logger.debug(s"$k=$v")
-        s"$k=" + URLEncoder.encode(if (v == null) "" else v.toString, "UTF-8")
-    }.mkString("&")
+        case (k, v) =>
+          logger.debug(s"$k=$v")
+          s"$k=" + URLEncoder.encode(if (v == null) "" else v.toString, "UTF-8")
+      }
+      .mkString("&")
   }
 
   def mapToQueryStringNoEncode(m: List[(String, Any)]): String = {
     m.map {
-      case (k, v) =>
-        logger.debug(s"$k=$v")
-        s"$k=$v"
-    }.mkString("&")
+        case (k, v) =>
+          logger.debug(s"$k=$v")
+          s"$k=$v"
+      }
+      .mkString("&")
   }
 
-  def fromHttResponse(response: Future[HttpResponse])(implicit ev: ExecutionContext): Future[Map[String, String]] = {
-    response map { response =>
-      val data = response.entity.asString.trim
-      logger.debug(s"data $data")
-      val pairs = data.split('&')
-      val tuples = (pairs map { pair =>
-            val tab = pair.split('=')
-            tab(0) -> (if (tab.length == 1) "" else tab(1))
-          }).toMap
-      tuples
+  def fromHttResponse(response: Future[HttpResponse])(
+      implicit ev: ExecutionContext): Future[Map[String, String]] = {
+    response flatMap { response =>
+      Unmarshal(response.entity).to[String].map { data =>
+        logger.debug(s"data $data")
+        val pairs = data.trim.split('&')
+        val tuples = (pairs map { pair =>
+          val tab = pair.split('=')
+          tab(0) -> (if (tab.length == 1) "" else tab(1))
+        }).toMap
+        tuples
+      }
     }
   }
 
-  def hideStringExceptLastN(s: String, n: Int = 4, replacement: String = "*") = {
+  def hideStringExceptLastN(s: String,
+                            n: Int = 4,
+                            replacement: String = "*") = {
     require(n >= 0, "The number of characters to hide cannot be lesser than 0.")
     if (s.length < n) {
       replacement * s.length
@@ -74,7 +85,9 @@ object GlobalUtil {
     }
   }
 
-  def queryStringToMap(s: String, sep: String = "&", elementsSep: String = "="): Map[String, String] = {
+  def queryStringToMap(s: String,
+                       sep: String = "&",
+                       elementsSep: String = "="): Map[String, String] = {
     val splitted = s.split(sep)
     splitted.toList match {
       case head :: Nil => Map()
@@ -86,10 +99,14 @@ object GlobalUtil {
     }
   }
 
-  def runInTransaction[T, U](call: DBSession => T, success: T => U, failure: Throwable => Unit = { e: Throwable =>
-    }): U = {
+  def runInTransaction[T, U](call: DBSession => T,
+                             success: T => U,
+                             failure: Throwable => Unit = { e: Throwable =>
+                               }): U = {
     val r = DB localTx { implicit session =>
-      Try { call(session) }
+      Try {
+        call(session)
+      }
     }
     r match {
       case Success(o) => success(o)
@@ -99,5 +116,4 @@ object GlobalUtil {
       }
     }
   }
-
 }
